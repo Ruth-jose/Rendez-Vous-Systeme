@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ht.rendezvous.gesifid.controllers.StockController"
+      spacing="15.0" styleClass="content-pane" VBox.vgrow="ALWAYS">
+
+    <Label text="📦 Gestion du Stock &amp; Alertes d'Approvisionnement" styleClass="pane-title"/>
+
+    <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+        <!-- Tableau des produits à gauche -->
+        <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+            <Label text="Liste des articles en stock :" styleClass="form-section-title"/>
+            <TableView fx:id="tableProduits" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="50.0"/>
+                    <TableColumn fx:id="colCode" text="Code Barre" prefWidth="100.0"/>
+                    <TableColumn fx:id="colNom" text="Désignation" prefWidth="180.0"/>
+                    <TableColumn fx:id="colPrix" text="Prix Unit. (HTG)" prefWidth="120.0"/>
+                    <TableColumn fx:id="colStock" text="Stock" prefWidth="80.0"/>
+                    <TableColumn fx:id="colAlerte" text="Seuil Alerte" prefWidth="90.0"/>
+                    <TableColumn fx:id="colEtat" text="État" prefWidth="90.0"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- Formulaire de création / modification à droite -->
+        <VBox spacing="15.0" prefWidth="300.0" styleClass="detail-sidebar-card">
+            <Label text="Fiche Article" styleClass="sidebar-card-title"/>
+            <Separator styleClass="subtle-divider"/>
+
+            <VBox spacing="5.0">
+                <Label text="Code Barre :" styleClass="form-label"/>
+                <TextField fx:id="txtCodeBarre" promptText="Ex: 7421102"/>
+            </VBox>
+
+            <VBox spacing="5.0">
+                <Label text="Désignation :" styleClass="form-label"/>
+                <TextField fx:id="txtNom" promptText="Ex: Ciment Portland"/>
+            </VBox>
+
+            <VBox spacing="5.0">
+                <Label text="Description :" styleClass="form-label"/>
+                <TextArea fx:id="txtDescription" promptText="Caractéristiques de l'article" prefHeight="80.0" wrapText="true"/>
+            </VBox>
+
+            <VBox spacing="5.0">
+                <Label text="Prix Unitaire (HTG) :" styleClass="form-label"/>
+                <TextField fx:id="txtPrix" promptText="Ex: 950.00"/>
+            </VBox>
+
+            <HBox spacing="10.0">
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <Label text="Quantité Stock :" styleClass="form-label"/>
+                    <TextField fx:id="txtStock" promptText="Ex: 250" text="0"/>
+                </VBox>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <Label text="Seuil Alerte :" styleClass="form-label"/>
+                    <TextField fx:id="txtSeuilAlerte" promptText="Ex: 20" text="5"/>
+                </VBox>
+            </HBox>
+            
+            <Region VBox.vgrow="ALWAYS" />
+
+            <HBox spacing="10.0">
+                <Button text="Enregistrer" onAction="#enregistrerProduit" styleClass="btn-success" HBox.hgrow="ALWAYS" prefWidth="130.0"/>
+                <Button text="Vider" onAction="#reinitialiserFormulaire" styleClass="btn-secondary" HBox.hgrow="ALWAYS" prefWidth="130.0"/>
+            </HBox>
+        </VBox>
+    </HBox>
+
+</VBox>

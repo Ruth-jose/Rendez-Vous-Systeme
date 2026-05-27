@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ht.rendezvous.gesifid.controllers.ClientController"
+      spacing="15.0" styleClass="content-pane" VBox.vgrow="ALWAYS">
+
+    <Label text="👥 Gestion des Clients &amp; Programme de Fidélisation" styleClass="pane-title"/>
+
+    <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+        <!-- Tableau des clients à gauche -->
+        <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+            <Label text="Liste des clients enregistrés :" styleClass="form-section-title"/>
+            <TableView fx:id="tableClients" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="50.0"/>
+                    <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="120.0"/>
+                    <TableColumn fx:id="colNom" text="Nom" prefWidth="120.0"/>
+                    <TableColumn fx:id="colTelephone" text="Téléphone" prefWidth="150.0"/>
+                    <TableColumn fx:id="colAchats" text="Total Achats Cumulés" prefWidth="180.0"/>
+                    <TableColumn fx:id="colFidelite" text="Statut Fidélité" prefWidth="150.0"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- Formulaire de création / modification à droite -->
+        <VBox spacing="15.0" prefWidth="300.0" styleClass="detail-sidebar-card">
+            <Label text="Fiche Client" styleClass="sidebar-card-title"/>
+            <Separator styleClass="subtle-divider"/>
+
+            <VBox spacing="5.0">
+                <Label text="Prénom :" styleClass="form-label"/>
+                <TextField fx:id="txtPrenom" promptText="Ex: Jean-Marie"/>
+            </VBox>
+
+            <VBox spacing="5.0">
+                <Label text="Nom de famille :" styleClass="form-label"/>
+                <TextField fx:id="txtNom" promptText="Ex: Augustin"/>
+            </VBox>
+
+            <VBox spacing="5.0">
+                <Label text="Téléphone (Haïti) :" styleClass="form-label"/>
+                <TextField fx:id="txtTelephone" promptText="Ex: 509-3899-2211"/>
+            </VBox>
+
+            <VBox spacing="5.0">
+                <Label text="Total Achats Historiques (HTG) :" styleClass="form-label"/>
+                <TextField fx:id="txtTotalAchats" promptText="Ex: 0.00" text="0.00" disable="true"/>
+                <Label text="* Seul l'encaissement met à jour ce champ." styleClass="field-info-text"/>
+            </VBox>
+            
+            <Region VBox.vgrow="ALWAYS" />
+
+            <HBox spacing="10.0">
+                <Button text="Enregistrer" onAction="#enregistrerClient" styleClass="btn-success" HBox.hgrow="ALWAYS" prefWidth="130.0"/>
+                <Button text="Vider" onAction="#reinitialiserFormulaire" styleClass="btn-secondary" HBox.hgrow="ALWAYS" prefWidth="130.0"/>
+            </HBox>
+        </VBox>
+    </HBox>
+
+</VBox>

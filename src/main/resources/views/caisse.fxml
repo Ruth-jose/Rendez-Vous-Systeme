@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ht.rendezvous.gesifid.controllers.CaisseController"
+      spacing="15.0" styleClass="content-pane" VBox.vgrow="ALWAYS">
+
+    <Label text="🛒 Caisse Comptoir - Encaissement Rapide" styleClass="pane-title"/>
+
+    <!-- Section Client -->
+    <HBox spacing="15.0" alignment="CENTER_LEFT" styleClass="section-card">
+        <Label text="Client (Tél) :" styleClass="form-label"/>
+        <TextField fx:id="txtClientTel" promptText="509-XXXX-XXXX" prefWidth="180.0"/>
+        <Button text="Rechercher" onAction="#rechercherClient" styleClass="btn-primary"/>
+        <Button text="Comptoir (Anonyme)" onAction="#definirClientAnonyme" styleClass="btn-secondary"/>
+        <Label fx:id="lblClientInfo" text="Client sélectionné : COMPTOIR (0% de remise)" styleClass="client-status"/>
+    </HBox>
+
+    <!-- Section Ajout Produit -->
+    <HBox spacing="15.0" alignment="CENTER_LEFT" styleClass="section-card">
+        <Label text="Produit (Code) :" styleClass="form-label"/>
+        <TextField fx:id="txtCodeBarre" promptText="Ex: 7421102" prefWidth="180.0" onAction="#ajouterProduitParCode"/>
+        <Label text="Quantité :" styleClass="form-label"/>
+        <TextField fx:id="txtQuantite" text="1" prefWidth="60.0" alignment="CENTER"/>
+        <Button text="Ajouter au panier" onAction="#ajouterProduitPanier" styleClass="btn-success"/>
+    </HBox>
+
+    <!-- Tableau du panier -->
+    <TableView fx:id="tablePanier" VBox.vgrow="ALWAYS" prefHeight="250.0">
+        <columns>
+            <TableColumn fx:id="colCode" text="Code barre" prefWidth="120.0"/>
+            <TableColumn fx:id="colNom" text="Article" prefWidth="250.0"/>
+            <TableColumn fx:id="colPrix" text="Prix Unitaire (HTG)" prefWidth="150.0"/>
+            <TableColumn fx:id="colQuantite" text="Quantité" prefWidth="100.0"/>
+            <TableColumn fx:id="colTotalLigne" text="Total Ligne (HTG)" prefWidth="180.0"/>
+        </columns>
+    </TableView>
+
+    <!-- Section Totaux & Validation -->
+    <HBox spacing="20.0" alignment="CENTER">
+        <!-- Cartes Totaux -->
+        <HBox spacing="10.0" HBox.hgrow="ALWAYS">
+            <VBox styleClass="summary-card" HBox.hgrow="ALWAYS">
+                <Label text="TOTAL BRUT" styleClass="summary-title"/>
+                <Label fx:id="lblTotalBrut" text="0.00 HTG" styleClass="summary-value"/>
+            </VBox>
+            <VBox styleClass="summary-card" HBox.hgrow="ALWAYS">
+                <Label text="REMISE ACCORDÉE" styleClass="summary-title"/>
+                <Label fx:id="lblMontantRemise" text="0.00 HTG" styleClass="summary-value, summary-value-highlight"/>
+            </VBox>
+            <VBox styleClass="summary-card, summary-card-highlighted" HBox.hgrow="ALWAYS">
+                <Label text="TOTAL NET À PAYER" styleClass="summary-title"/>
+                <Label fx:id="lblTotalNet" text="0.00 HTG" styleClass="summary-value, summary-value-success"/>
+            </VBox>
+        </HBox>
+
+        <!-- Mode de Paiement et Validation -->
+        <VBox spacing="10.0" alignment="CENTER_LEFT" prefWidth="250.0" styleClass="checkout-card">
+            <Label text="Mode de paiement :" styleClass="form-label"/>
+            <ComboBox fx:id="comboPaiement" prefWidth="230.0"/>
+            <Button text="F5 - Valider &amp; Imprimer" onAction="#validerEtImprimerAchat" styleClass="btn-success, btn-large" prefWidth="230.0"/>
+        </VBox>
+    </HBox>
+
+</VBox>

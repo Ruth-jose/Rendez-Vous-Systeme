@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ht.rendezvous.gesifid.controllers.MainController"
+            prefHeight="720.0" prefWidth="1024.0" styleClass="root">
+            
+    <!-- Sidebar gauche -->
+    <left>
+        <VBox styleClass="sidebar">
+            <Label text="GESIFID v1.0" styleClass="sidebar-title"/>
+            
+            <Button text="🛒 Caisse Comptoir" onAction="#afficherCaisse" fx:id="btnCaisse" styleClass="sidebar-btn, sidebar-btn-active"/>
+            <Button text="📦 Gestion de Stock" onAction="#afficherStock" fx:id="btnStock" styleClass="sidebar-btn"/>
+            <Button text="👥 Clients &amp; Fidélité" onAction="#afficherClients" fx:id="btnClients" styleClass="sidebar-btn"/>
+            
+            <Region VBox.vgrow="ALWAYS" />
+            
+            <Separator styleClass="subtle-divider"/>
+            <Label text="Entreprise Rendez-vous" styleClass="sidebar-footer-title"/>
+            <Label text="Cayes-Jacmel, Haïti" styleClass="sidebar-footer-subtitle"/>
+        </VBox>
+    </left>
+    
+    <!-- Zone de contenu centrale -->
+    <center>
+        <StackPane fx:id="contentArea" styleClass="content-pane"/>
+    </center>
+    
+</BorderPane>

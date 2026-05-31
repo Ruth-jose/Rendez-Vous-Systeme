@@ -118,4 +118,57 @@ public class VenteService {
             conn.setAutoCommit(initialAutoCommit);
         }
     }
+
+    /**
+     * Annule une vente de manière transactionnelle (ACID).
+     * Restaure les stocks physiques des produits, soustrait le total net des achats cumulés du client,
+     * et supprime l'enregistrement de la vente (la suppression des lignes est gérée en cascade par la DB).
+     */
+    public void annulerVente(int venteId) throws SQLException {
+        Connection conn = DatabaseConfig.getConnection();
+        boolean initialAutoCommit = conn.getAutoCommit();
+
+        try {
+            // 1. Démarrer la transaction SQL
+            conn.setAutoCommit(false);
+
+            // 2. Trouver la vente en DB
+            Vente vente = venteDAO.findById(venteId);
+            if (vente == null) {
+                throw new SQLException("Vente introuvable (ID: " + venteId + ").");
+            }
+
+            // 3. Récupérer les lignes de la vente pour réapprovisionner le stock
+            java.util.List<LigneVente> lignes = venteDAO.findLignesByVenteId(venteId);
+            for (LigneVente ligne : lignes) {
+                Produit produit = produitDAO.findById(ligne.getProduitId());
+                if (produit != null) {
+                    int nouveauStock = produit.getQuantiteStock() + ligne.getQuantite();
+                    produitDAO.updateStock(produit.getId(), nouveauStock);
+                }
+            }
+
+            // 4. Mettre à jour l'historique d'achat cumulé du client
+            if (vente.getClientId() != null) {
+                Client client = clientDAO.findById(vente.getClientId());
+                if (client != null) {
+                    clientDAO.addToCumulativePurchases(client.getId(), -vente.getTotalNet());
+                }
+            }
+
+            // 5. Supprimer la vente (la table ligne_vente est configurée en ON DELETE CASCADE)
+            venteDAO.delete(venteId, conn);
+
+            // 6. Commit de la transaction
+            conn.commit();
+
+        } catch (SQLException e) {
+            // Rollback en cas d'erreur
+            conn.rollback();
+            throw e;
+        } finally {
+            // Restaurer l'état d'auto-commit
+            conn.setAutoCommit(initialAutoCommit);
+        }
+    }
 }

@@ -64,7 +64,7 @@ public class VenteDAO {
 
     public List<LigneVente> findLignesByVenteId(int venteId) throws SQLException {
         List<LigneVente> lignes = new ArrayList<>();
-        String sql = "SELECT lv.*, p.nom as nom_produit FROM ligne_vente lv " +
+        String sql = "SELECT lv.*, p.nom as nom_produit, p.code_barre as code_barre FROM ligne_vente lv " +
                      "JOIN produit p ON lv.produit_id = p.id " +
                      "WHERE lv.vente_id = ? ORDER BY lv.id ASC";
         try (Connection conn = DatabaseConfig.getConnection();
@@ -80,11 +80,34 @@ public class VenteDAO {
                             rs.getDouble("prix_unitaire_facture")
                     );
                     lv.setNomProduit(rs.getString("nom_produit"));
+                    lv.setCodeProduitHelper(rs.getString("code_barre"));
                     lignes.add(lv);
                 }
             }
         }
         return lignes;
+    }
+
+    public Vente findById(int id) throws SQLException {
+        String sql = "SELECT * FROM vente WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToVente(rs);
+                }
+            }
+        }
+        return null;
+    }
+
+    public void delete(int venteId, Connection conn) throws SQLException {
+        String sql = "DELETE FROM vente WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, venteId);
+            pstmt.executeUpdate();
+        }
     }
 
     private Vente mapResultSetToVente(ResultSet rs) throws SQLException {

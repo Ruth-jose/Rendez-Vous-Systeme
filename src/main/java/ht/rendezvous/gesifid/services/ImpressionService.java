@@ -9,6 +9,7 @@ import javax.print.attribute.PrintRequestAttributeSet;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.format.DateTimeFormatter;
+import java.util.Properties;
 
 public class ImpressionService {
 
@@ -19,10 +20,21 @@ public class ImpressionService {
         StringBuilder sb = new StringBuilder();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
+        Properties companyProps = loadCompanyProperties();
+        String companyName = companyProps.getProperty("company.name");
+        String companySlogan = companyProps.getProperty("company.slogan");
+        String companyAddress = companyProps.getProperty("company.address");
+        String companyPhone = companyProps.getProperty("company.phone");
+
         sb.append("================================\n");
-        sb.append("     ENTREPRISE RENDEZ-VOUS     \n");
-        sb.append("   \"Bâtir l'avenir en confiance\"\n");
-        sb.append("  Cayes-Jacmel, Sud-Est, Haïti  \n");
+        sb.append(centrerTexte(companyName, 32)).append("\n");
+        if (companySlogan != null && !companySlogan.trim().isEmpty()) {
+            sb.append(centrerTexte(companySlogan, 32)).append("\n");
+        }
+        sb.append(centrerTexte(companyAddress, 32)).append("\n");
+        if (companyPhone != null && !companyPhone.trim().isEmpty()) {
+            sb.append(centrerTexte("Tel: " + companyPhone, 32)).append("\n");
+        }
         sb.append("================================\n");
         sb.append("Ticket No : #V-").append(String.format("%06d", vente.getId())).append("\n");
         sb.append("Date : ").append(vente.getDateVente().format(dtf)).append("\n");
@@ -106,5 +118,38 @@ public class ImpressionService {
     private String remplirEspaces(int count) {
         if (count <= 0) return "";
         return " ".repeat(count);
+    }
+
+    private Properties loadCompanyProperties() {
+        Properties props = new Properties();
+        // Valeurs par défaut
+        props.setProperty("company.name", "ENTREPRISE RENDEZ-VOUS");
+        props.setProperty("company.slogan", "\"Bâtir l'avenir en confiance\"");
+        props.setProperty("company.address", "Cayes-Jacmel, Sud-Est, Haïti");
+        props.setProperty("company.phone", "509-3777-6655");
+
+        java.io.File propFile = new java.io.File("database.properties");
+        if (propFile.exists()) {
+            try (java.io.FileInputStream fis = new java.io.FileInputStream(propFile);
+                 java.io.InputStreamReader isr = new java.io.InputStreamReader(fis, java.nio.charset.StandardCharsets.UTF_8)) {
+                Properties loaded = new Properties();
+                loaded.load(isr);
+                for (String key : loaded.stringPropertyNames()) {
+                    if (key.startsWith("company.")) {
+                        props.setProperty(key, loaded.getProperty(key));
+                    }
+                }
+            } catch (java.io.IOException e) {
+                System.err.println("Erreur lors de la lecture des propriétés de l'entreprise : " + e.getMessage());
+            }
+        }
+        return props;
+    }
+
+    private String centrerTexte(String str, int width) {
+        if (str == null) return "";
+        if (str.length() >= width) return str.substring(0, width);
+        int padding = (width - str.length()) / 2;
+        return " ".repeat(padding) + str;
     }
 }

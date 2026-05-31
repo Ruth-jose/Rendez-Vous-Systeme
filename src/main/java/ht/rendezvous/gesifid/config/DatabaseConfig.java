@@ -27,9 +27,10 @@ public class DatabaseConfig {
         // Charger les paramètres depuis database.properties s'il existe
         File propFile = new File("database.properties");
         if (propFile.exists()) {
-            try (FileInputStream fis = new FileInputStream(propFile)) {
+            try (FileInputStream fis = new FileInputStream(propFile);
+                 java.io.InputStreamReader isr = new java.io.InputStreamReader(fis, java.nio.charset.StandardCharsets.UTF_8)) {
                 Properties props = new Properties();
-                props.load(fis);
+                props.load(isr);
                 url = props.getProperty("db.url", url);
                 user = props.getProperty("db.user", user);
                 password = props.getProperty("db.password", password);
@@ -38,12 +39,13 @@ public class DatabaseConfig {
             }
         } else {
             // Générer le fichier s'il n'existe pas pour faciliter la configuration utilisateur
-            try (FileOutputStream fos = new FileOutputStream(propFile)) {
+            try (FileOutputStream fos = new FileOutputStream(propFile);
+                 java.io.OutputStreamWriter osw = new java.io.OutputStreamWriter(fos, java.nio.charset.StandardCharsets.UTF_8)) {
                 Properties props = new Properties();
                 props.setProperty("db.url", url);
                 props.setProperty("db.user", user);
                 props.setProperty("db.password", password);
-                props.store(fos, "=== CONFIGURATION DE LA BASE DE DONNEES - GESIFID ===\n" +
+                props.store(osw, "=== CONFIGURATION DE LA BASE DE DONNEES - GESIFID ===\n" +
                                  "Modifiez ces valeurs pour correspondre a votre configuration PostgreSQL locale.");
             } catch (IOException e) {
                 System.err.println("Impossible de créer le fichier database.properties par défaut.");
@@ -65,6 +67,10 @@ public class DatabaseConfig {
                 // Chargement explicite du pilote PostgreSQL
                 Class.forName("org.postgresql.Driver");
                 connection = DriverManager.getConnection(url, user, password);
+                
+                // Initialisation automatique si les tables n'existent pas encore
+                initialiserBaseDeDonneesSiNecessaire(connection);
+                
             } catch (ClassNotFoundException e) {
                 throw new SQLException("Le pilote JDBC PostgreSQL est introuvable. Ajoutez-le à votre classpath Maven.", e);
             } catch (SQLException e) {
@@ -96,6 +102,56 @@ public class DatabaseConfig {
             }
         }
         return connection;
+    }
+
+    /**
+     * Vérifie si la table 'produit' existe. Si elle est absente, lit et exécute 'database/schema.sql'.
+     */
+    private static void initialiserBaseDeDonneesSiNecessaire(Connection conn) {
+        try (java.sql.Statement stmt = conn.createStatement()) {
+            boolean tableExiste = false;
+            try {
+                // Requête robuste pour vérifier la présence de la table produit
+                try (java.sql.ResultSet rs = stmt.executeQuery(
+                        "SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'produit')")) {
+                    if (rs.next()) {
+                        tableExiste = rs.getBoolean(1);
+                    }
+                }
+            } catch (SQLException checkEx) {
+                // En cas d'erreur de vérification, on assume qu'elle n'existe pas
+                tableExiste = false;
+            }
+
+            if (!tableExiste) {
+                System.out.println("GESIFID : La table 'produit' est absente. Initialisation de la base...");
+                File schemaFile = new File("database/schema.sql");
+                if (schemaFile.exists()) {
+                    StringBuilder sql = new StringBuilder();
+                    try (FileInputStream fis = new FileInputStream(schemaFile);
+                         java.io.InputStreamReader isr = new java.io.InputStreamReader(fis, java.nio.charset.StandardCharsets.UTF_8);
+                         java.io.BufferedReader reader = new java.io.BufferedReader(isr)) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            // Ignorer les commentaires monolignes SQL pour un traitement propre
+                            if (line.trim().startsWith("--")) {
+                                continue;
+                            }
+                            sql.append(line).append("\n");
+                        }
+                    }
+                    
+                    // Exécution du script DDL & DML d'initialisation
+                    stmt.execute(sql.toString());
+                    System.out.println("GESIFID : Base de données initialisée avec succès avec les données de test !");
+                } else {
+                    System.err.println("GESIFID [Alerte] : Le fichier de référence 'database/schema.sql' est introuvable à la racine.");
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("GESIFID [Erreur] : Impossible d'initialiser automatiquement la base de données : " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**

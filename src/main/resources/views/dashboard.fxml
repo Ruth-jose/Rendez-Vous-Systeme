@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ht.rendezvous.gesifid.controllers.DashboardController"
+      spacing="20.0" styleClass="content-pane" VBox.vgrow="ALWAYS">
+
+    <!-- En-tête -->
+    <HBox alignment="CENTER_LEFT" spacing="20.0">
+        <Label text="📊 Tableau de Bord &amp; Analyses Commerciales" styleClass="pane-title" HBox.hgrow="ALWAYS"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="Période :" style="-fx-font-weight: bold; -fx-text-fill: #94a3b8;"/>
+        <ComboBox fx:id="comboFiltrePeriode" prefWidth="180.0" styleClass="combo-box"/>
+    </HBox>
+
+    <!-- Ligne de cartes KPI -->
+    <GridPane hgap="15.0" vgap="15.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="25.0"/>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="25.0"/>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="25.0"/>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="25.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="90.0" prefHeight="90.0" vgrow="NEVER"/>
+        </rowConstraints>
+        <children>
+            <!-- CA Total -->
+            <VBox styleClass="summary-card, summary-card-highlighted" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <Label text="CHIFFRE D'AFFAIRES CUMULÉ" styleClass="summary-title"/>
+                <Label fx:id="lblChiffreAffaires" text="0.00 HTG" styleClass="summary-value, summary-value-highlight"/>
+            </VBox>
+
+            <!-- Ventes -->
+            <VBox styleClass="summary-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <Label text="VENTES TOTALES" styleClass="summary-title"/>
+                <Label fx:id="lblTotalVentes" text="0" styleClass="summary-value"/>
+            </VBox>
+
+            <!-- Panier Moyen -->
+            <VBox styleClass="summary-card" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                <Label text="PANIER MOYEN" styleClass="summary-title"/>
+                <Label fx:id="lblPanierMoyen" text="0.00 HTG" styleClass="summary-value, summary-value-success"/>
+            </VBox>
+
+            <!-- Stock Alerte -->
+            <VBox styleClass="summary-card" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                <Label text="ARTICLES EN ALERTE STOCK" styleClass="summary-title"/>
+                <Label fx:id="lblArticlesAlerte" text="0" styleClass="summary-value" style="-fx-text-fill: #ef4444;"/>
+            </VBox>
+        </children>
+    </GridPane>
+
+    <!-- Zone des Graphiques (Section centrale) -->
+    <HBox spacing="20.0" VBox.vgrow="ALWAYS" prefHeight="260.0">
+        <!-- Évolution CA (Area Chart) -->
+        <VBox spacing="10.0" HBox.hgrow="ALWAYS" styleClass="section-card">
+            <Label text="Évolution quotidienne du Chiffre d'Affaires" styleClass="form-section-title"/>
+            <AreaChart fx:id="chartChiffreAffaires" legendVisible="false" VBox.vgrow="ALWAYS">
+                <xAxis>
+                    <CategoryAxis fx:id="xAxisDate" side="BOTTOM" tickLabelFill="#94a3b8"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis fx:id="yAxisCA" side="LEFT" tickLabelFill="#94a3b8"/>
+                </yAxis>
+            </AreaChart>
+        </VBox>
+
+        <!-- Mode Paiement (Pie Chart) -->
+        <VBox spacing="10.0" styleClass="section-card" prefWidth="320.0">
+            <Label text="Modes de Paiement" styleClass="form-section-title"/>
+            <PieChart fx:id="chartModesPaiement" legendVisible="true" labelsVisible="false" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </HBox>
+
+    <!-- Alertes et Meilleurs Clients (Section inférieure) -->
+    <HBox spacing="20.0" prefHeight="200.0" VBox.vgrow="NEVER">
+        <!-- Produits en Rupture / Alerte -->
+        <VBox spacing="10.0" HBox.hgrow="ALWAYS" styleClass="section-card">
+            <Label text="⚠️ Produits en Alerte / Rupture de Stock" styleClass="form-section-title" style="-fx-text-fill: #f87171;"/>
+            <TableView fx:id="tableAlerteStock" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colAlerteCode" text="Code" prefWidth="100.0"/>
+                    <TableColumn fx:id="colAlerteNom" text="Désignation" prefWidth="160.0"/>
+                    <TableColumn fx:id="colAlerteStock" text="Stock Actuel" prefWidth="90.0"/>
+                    <TableColumn fx:id="colAlerteSeuil" text="Seuil Alerte" prefWidth="90.0"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- Top Clients -->
+        <VBox spacing="10.0" HBox.hgrow="ALWAYS" styleClass="section-card">
+            <Label text="🏆 Clients Majeurs (Fidélité Actitive)" styleClass="form-section-title" style="-fx-text-fill: #60a5fa;"/>
+            <TableView fx:id="tableTopClients" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colClientNom" text="Client" prefWidth="150.0"/>
+                    <TableColumn fx:id="colClientTel" text="Téléphone" prefWidth="110.0"/>
+                    <TableColumn fx:id="colClientAchats" text="Total Cumulé (HTG)" prefWidth="180.0"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </HBox>
+
+</VBox>

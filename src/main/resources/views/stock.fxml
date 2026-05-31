@@ -12,7 +12,11 @@
     <HBox spacing="20.0" VBox.vgrow="ALWAYS">
         <!-- Tableau des produits à gauche -->
         <VBox spacing="10.0" HBox.hgrow="ALWAYS">
-            <Label text="Liste des articles en stock :" styleClass="form-section-title"/>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label text="Liste des articles en stock :" styleClass="form-section-title" HBox.hgrow="ALWAYS"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="📋 Générer Proposition d'Approvisionnement" onAction="#genererRapportApprovisionnement" styleClass="btn-primary" style="-fx-font-weight: bold;"/>
+            </HBox>
             <TableView fx:id="tableProduits" VBox.vgrow="ALWAYS">
                 <columns>
                     <TableColumn fx:id="colId" text="ID" prefWidth="50.0"/>

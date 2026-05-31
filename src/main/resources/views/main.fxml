@@ -12,9 +12,12 @@
         <VBox styleClass="sidebar">
             <Label text="GESIFID v1.0" styleClass="sidebar-title"/>
             
-            <Button text="🛒 Caisse Comptoir" onAction="#afficherCaisse" fx:id="btnCaisse" styleClass="sidebar-btn, sidebar-btn-active"/>
+            <Button text="📊 Tableau de Bord" onAction="#afficherDashboard" fx:id="btnDashboard" styleClass="sidebar-btn, sidebar-btn-active"/>
+            <Button text="🛒 Caisse Comptoir" onAction="#afficherCaisse" fx:id="btnCaisse" styleClass="sidebar-btn"/>
             <Button text="📦 Gestion de Stock" onAction="#afficherStock" fx:id="btnStock" styleClass="sidebar-btn"/>
             <Button text="👥 Clients &amp; Fidélité" onAction="#afficherClients" fx:id="btnClients" styleClass="sidebar-btn"/>
+            <Button text="📜 Historique Ventes" onAction="#afficherHistorique" fx:id="btnHistorique" styleClass="sidebar-btn"/>
+            <Button text="⚙️ Paramètres" onAction="#afficherParametres" fx:id="btnParametres" styleClass="sidebar-btn"/>
             
             <Region VBox.vgrow="ALWAYS" />
             

@@ -10,6 +10,13 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import ht.rendezvous.gesifid.services.ImpressionService;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 
 import java.sql.SQLException;
 
@@ -174,6 +181,105 @@ public class StockController {
         txtPrix.clear();
         txtStock.setText("0");
         txtSeuilAlerte.setText("5");
+    }
+
+    @FXML
+    void genererRapportApprovisionnement(ActionEvent event) {
+        try {
+            java.util.List<Produit> produits = produitDAO.findAll();
+            java.util.List<Produit> alertes = produits.stream()
+                    .filter(Produit::estEnAlerteStock)
+                    .collect(java.util.stream.Collectors.toList());
+
+            if (alertes.isEmpty()) {
+                afficherAlerte("Stock Optimal", "Aucun produit n'est sous le seuil d'alerte. Le stock est optimal !", Alert.AlertType.INFORMATION);
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("================================\n");
+            sb.append("     BON D'APPROVISIONNEMENT    \n");
+            sb.append("     ENTREPRISE RENDEZ-VOUS     \n");
+            sb.append("   Date : ").append(java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))).append("\n");
+            sb.append("================================\n");
+            sb.append("Articles en rupture ou alerte :\n");
+            sb.append("--------------------------------\n");
+
+            double totalEstime = 0.0;
+            for (Produit p : alertes) {
+                int qteConseillee = (p.getSeuilAlerte() * 3) - p.getQuantiteStock();
+                if (qteConseillee <= 0) {
+                    qteConseillee = p.getSeuilAlerte() * 2;
+                }
+                
+                double coutLigne = qteConseillee * p.getPrixUnitaire();
+                totalEstime += coutLigne;
+
+                sb.append(p.getNom()).append(" (#").append(p.getCodeBarre()).append(")\n");
+                sb.append(String.format("  Actuel: %d | Seuil: %d\n", p.getQuantiteStock(), p.getSeuilAlerte()));
+                sb.append(String.format("  A commander : %d unités\n", qteConseillee));
+                sb.append(String.format("  Coût estimé : %,.2f HTG\n", coutLigne));
+                sb.append("--------------------------------\n");
+            }
+
+            sb.append(String.format("TOTAL ESTIMÉ : %,.2f HTG\n", totalEstime));
+            sb.append("================================\n");
+            sb.append("  Généré automatiquement par\n");
+            sb.append("       le système GESIFID\n");
+            sb.append("================================\n");
+
+            String rapport = sb.toString();
+
+            Alert dialog = new Alert(Alert.AlertType.NONE);
+            dialog.setTitle("Proposition d'Approvisionnement");
+            dialog.setHeaderText("Articles à commander pour réapprovisionner");
+            
+            TextArea textArea = new TextArea(rapport);
+            textArea.setEditable(false);
+            textArea.setWrapText(true);
+            textArea.setPrefWidth(450);
+            textArea.setPrefHeight(350);
+            
+            dialog.getDialogPane().setContent(textArea);
+            
+            ButtonType btnImprimer = new ButtonType("🖨️ Imprimer", ButtonBar.ButtonData.OK_DONE);
+            ButtonType btnEnregistrer = new ButtonType("💾 Enregistrer", ButtonBar.ButtonData.OTHER);
+            ButtonType btnFermer = new ButtonType("Fermer", ButtonBar.ButtonData.CANCEL_CLOSE);
+            
+            dialog.getButtonTypes().setAll(btnImprimer, btnEnregistrer, btnFermer);
+            
+            java.util.Optional<ButtonType> result = dialog.showAndWait();
+            if (result.isPresent()) {
+                if (result.get() == btnImprimer) {
+                    ImpressionService imp = new ImpressionService();
+                    imp.imprimerTicket(rapport);
+                    afficherAlerte("Impression Lancée", "Le bon de commande a été envoyé à l'imprimante.", Alert.AlertType.INFORMATION);
+                } else if (result.get() == btnEnregistrer) {
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle("Enregistrer le Bon d'Approvisionnement");
+                    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichier Texte (*.txt)", "*.txt"));
+                    fileChooser.setInitialFileName("bon_commande_" + java.time.LocalDate.now() + ".txt");
+                    
+                    Stage stage = (Stage) tableProduits.getScene().getWindow();
+                    java.io.File file = fileChooser.showSaveDialog(stage);
+                    if (file != null) {
+                        try (FileOutputStream fos = new FileOutputStream(file);
+                             OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+                             BufferedWriter writer = new BufferedWriter(osw)) {
+                            writer.write(rapport);
+                            afficherAlerte("Sauvegarde Réussie", "Le rapport a été enregistré sous :\n" + file.getAbsolutePath(), Alert.AlertType.INFORMATION);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            afficherAlerte("Erreur", "Impossible de sauvegarder le fichier : " + ex.getMessage(), Alert.AlertType.ERROR);
+                        }
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            afficherAlerte("Erreur DB", "Impossible de générer le rapport : " + e.getMessage(), Alert.AlertType.ERROR);
+        }
     }
 
     private void afficherAlerte(String titre, String message, Alert.AlertType type) {

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ht.rendezvous.gesifid.controllers.ParametresController"
+      spacing="20.0" styleClass="content-pane" VBox.vgrow="ALWAYS">
+
+    <!-- En-tête -->
+    <Label text="⚙️ Configuration Globale &amp; Utilitaires Système" styleClass="pane-title"/>
+
+    <!-- Grille de 2 colonnes principales -->
+    <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+        <!-- Colonne Gauche : Configuration En-tête -->
+        <VBox spacing="15.0" HBox.hgrow="ALWAYS" styleClass="detail-sidebar-card" maxWidth="480.0">
+            <Label text="Informations de l'En-tête des Tickets" styleClass="sidebar-card-title"/>
+            <Label text="Ces valeurs seront imprimées dynamiquement sur chaque ticket de caisse thermique (58mm)." styleClass="field-info-text" wrapText="true"/>
+            <Separator styleClass="subtle-divider"/>
+
+            <VBox spacing="5.0">
+                <Label text="Nom de l'Entreprise :" styleClass="form-label"/>
+                <TextField fx:id="txtCompanyName" promptText="Ex: ENTREPRISE RENDEZ-VOUS"/>
+            </VBox>
+
+            <VBox spacing="5.0">
+                <Label text="Slogan / Slogan d'Impression :" styleClass="form-label"/>
+                <TextField fx:id="txtCompanySlogan" promptText="Ex: Bâtir l'avenir en confiance"/>
+            </VBox>
+
+            <VBox spacing="5.0">
+                <Label text="Adresse Géographique :" styleClass="form-label"/>
+                <TextField fx:id="txtCompanyAddress" promptText="Ex: Cayes-Jacmel, Sud-Est, Haïti"/>
+            </VBox>
+
+            <VBox spacing="5.0">
+                <Label text="Numéro de Téléphone :" styleClass="form-label"/>
+                <TextField fx:id="txtCompanyPhone" promptText="Ex: 509-3777-6655"/>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS" />
+            <Separator styleClass="subtle-divider"/>
+
+            <Button text="Enregistrer les paramètres" onAction="#enregistrerConfig" styleClass="btn-success" prefHeight="45.0" prefWidth="480.0"/>
+        </VBox>
+
+        <!-- Colonne Droite : Diagnostics & Guide de Fidélité -->
+        <VBox spacing="20.0" HBox.hgrow="ALWAYS">
+            <!-- Bloc Diagnostics -->
+            <VBox spacing="15.0" styleClass="detail-sidebar-card">
+                <Label text="Diagnostic Système &amp; Connexions" styleClass="sidebar-card-title"/>
+                <Separator styleClass="subtle-divider"/>
+
+                <HBox spacing="15.0" alignment="CENTER_LEFT">
+                    <Label text="Base de données PostgreSQL :" styleClass="form-label"/>
+                    <Label fx:id="lblDbStatus" text="Vérification en cours..." style="-fx-text-fill: #fbbf24; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Button text="Tester la connexion" onAction="#testerConnexion" styleClass="btn-secondary"/>
+                </HBox>
+            </VBox>
+
+            <!-- Bloc Sauvegarde / Restauration -->
+            <VBox spacing="15.0" styleClass="detail-sidebar-card">
+                <Label text="Sauvegarde &amp; Restauration des Données" styleClass="sidebar-card-title" style="-fx-text-fill: #fbbf24;"/>
+                <Separator styleClass="subtle-divider"/>
+                
+                <Label text="Sauvegardez l'intégralité de vos ventes, clients et produits locaux dans un fichier de secours ou restaurez un état précédent." styleClass="field-info-text" wrapText="true"/>
+                
+                <HBox spacing="15.0" alignment="CENTER">
+                    <Button text="💾 Créer une Sauvegarde" onAction="#sauvegarderBase" styleClass="btn-primary" HBox.hgrow="ALWAYS" prefWidth="200.0"/>
+                    <Button text="📂 Restaurer une Sauvegarde" onAction="#restaurerBase" styleClass="btn-secondary" HBox.hgrow="ALWAYS" prefWidth="200.0"/>
+                </HBox>
+            </VBox>
+
+            <!-- Bloc Guide de Fidélité -->
+            <VBox spacing="15.0" styleClass="detail-sidebar-card" VBox.vgrow="ALWAYS">
+                <Label text="Guide Visuel du Programme de Fidélisation" styleClass="sidebar-card-title" style="-fx-text-fill: #10b981;"/>
+                <Separator styleClass="subtle-divider"/>
+
+                <VBox spacing="12.0">
+                    <Label text="Le système calcule automatiquement la remise fidélité sur le total brut de la caisse selon les dépenses cumulées du client :" styleClass="field-info-text" wrapText="true" style="-fx-font-size: 13px;"/>
+                    
+                    <Separator styleClass="subtle-divider"/>
+                    
+                    <!-- Palier 1 -->
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <Label text="🔴 Palier Standard (0% de remise)" style="-fx-text-fill: #f8fafc; -fx-font-weight: bold;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label text="Moins de 150k HTG cumulés" style="-fx-text-fill: #94a3b8;"/>
+                    </HBox>
+                    
+                    <!-- Palier 2 -->
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <Label text="🟡 Palier Privilège (2% de remise)" style="-fx-text-fill: #fbbf24; -fx-font-weight: bold;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label text="De 150k à 500k HTG cumulés" style="-fx-text-fill: #94a3b8;"/>
+                    </HBox>
+                    
+                    <!-- Palier 3 -->
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <Label text="🟢 Palier Partenaire (5% de remise)" style="-fx-text-fill: #34d399; -fx-font-weight: bold;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label text="Plus de 500k HTG cumulés" style="-fx-text-fill: #94a3b8;"/>
+                    </HBox>
+
+                    <Separator styleClass="subtle-divider"/>
+                    
+                    <VBox spacing="8.0" style="-fx-background-color: #0f172a; -fx-padding: 12px; -fx-background-radius: 6px; -fx-border-color: #334155; -fx-border-radius: 6px; -fx-border-width: 1px;">
+                        <Label text="⭐ RÈGLE D'EXCEPTION ENTREPRENEURS" style="-fx-text-fill: #38bdf8; -fx-font-weight: 900; -fx-font-size: 11px;"/>
+                        <Label text="L'achat de plus de 100 sacs de ciment cumulés au cours du trimestre en cours active immédiatement la remise VIP de 5%, peu importe le montant historique total." styleClass="field-info-text" wrapText="true" style="-fx-text-fill: #cbd5e1; -fx-font-style: normal;"/>
+                    </VBox>
+                </VBox>
+            </VBox>
+        </VBox>
+    </HBox>
+
+</VBox>

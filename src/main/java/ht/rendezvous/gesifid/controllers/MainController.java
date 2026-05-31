@@ -15,16 +15,27 @@ public class MainController {
     private StackPane contentArea;
 
     @FXML
+    private Button btnDashboard;
+    @FXML
     private Button btnCaisse;
     @FXML
     private Button btnStock;
     @FXML
     private Button btnClients;
+    @FXML
+    private Button btnHistorique;
+    @FXML
+    private Button btnParametres;
 
     @FXML
     public void initialize() {
-        // Charger la vue caisse par défaut lors du démarrage
-        chargerVue("/views/caisse.fxml", btnCaisse);
+        // Charger le tableau de bord par défaut lors du démarrage
+        chargerVue("/views/dashboard.fxml", btnDashboard);
+    }
+
+    @FXML
+    void afficherDashboard(ActionEvent event) {
+        chargerVue("/views/dashboard.fxml", btnDashboard);
     }
 
     @FXML
@@ -40,6 +51,16 @@ public class MainController {
     @FXML
     void afficherClients(ActionEvent event) {
         chargerVue("/views/client.fxml", btnClients);
+    }
+
+    @FXML
+    void afficherHistorique(ActionEvent event) {
+        chargerVue("/views/historique.fxml", btnHistorique);
+    }
+
+    @FXML
+    void afficherParametres(ActionEvent event) {
+        chargerVue("/views/parametres.fxml", btnParametres);
     }
 
     private void chargerVue(String fxmlPath, Button sourceButton) {
@@ -63,8 +84,11 @@ public class MainController {
     }
 
     private void desactiverTousLesBoutonsStyle() {
+        btnDashboard.getStyleClass().remove("sidebar-btn-active");
         btnCaisse.getStyleClass().remove("sidebar-btn-active");
         btnStock.getStyleClass().remove("sidebar-btn-active");
         btnClients.getStyleClass().remove("sidebar-btn-active");
+        btnHistorique.getStyleClass().remove("sidebar-btn-active");
+        btnParametres.getStyleClass().remove("sidebar-btn-active");
     }
 }

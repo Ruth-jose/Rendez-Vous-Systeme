@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ht.rendezvous.gesifid.controllers.HistoriqueController"
+      spacing="15.0" styleClass="content-pane" VBox.vgrow="ALWAYS">
+
+    <!-- En-tête -->
+    <Label text="📜 Historique des Ventes &amp; Journal de Caisse" styleClass="pane-title"/>
+
+    <!-- Barre de recherche et de filtres -->
+    <HBox spacing="15.0" alignment="CENTER_LEFT" styleClass="section-card" prefHeight="70.0" VBox.vgrow="NEVER">
+        <Label text="Filtrer par Client (Téléphone) :" styleClass="form-label"/>
+        <TextField fx:id="txtFiltreClient" promptText="Ex: 509-3777-6655" prefWidth="180.0"/>
+        
+        <Label text="Mode Paiement :" styleClass="form-label" style="-fx-padding: 0 0 0 15;"/>
+        <ComboBox fx:id="comboFiltrePaiement" prefWidth="140.0"/>
+        
+        <Region HBox.hgrow="ALWAYS" />
+        
+        <Button text="Actualiser" onAction="#chargerHistorique" styleClass="btn-secondary"/>
+        <Button text="📥 Exporter CSV" onAction="#exporterCSV" styleClass="btn-success"/>
+    </HBox>
+
+    <!-- Zone principale SplitPane -->
+    <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+        <!-- Table des transactions à gauche -->
+        <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+            <Label text="Liste des transactions :" styleClass="form-section-title"/>
+            <TableView fx:id="tableVentes" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colId" text="N° Ticket" prefWidth="90.0"/>
+                    <TableColumn fx:id="colDate" text="Date &amp; Heure" prefWidth="160.0"/>
+                    <TableColumn fx:id="colClient" text="Client (ID)" prefWidth="90.0"/>
+                    <TableColumn fx:id="colBrut" text="Total Brut" prefWidth="110.0"/>
+                    <TableColumn fx:id="colRemise" text="Remise" prefWidth="100.0"/>
+                    <TableColumn fx:id="colNet" text="Total Net" prefWidth="120.0"/>
+                    <TableColumn fx:id="colPaiement" text="Paiement" prefWidth="100.0"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- Fiche détails transaction à droite -->
+        <VBox spacing="15.0" prefWidth="350.0" styleClass="detail-sidebar-card">
+            <Label text="Détails du Ticket" styleClass="sidebar-card-title"/>
+            <Separator styleClass="subtle-divider"/>
+
+            <!-- Bloc Informations -->
+            <GridPane vgap="8.0" hgap="10.0">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="100.0" />
+                    <ColumnConstraints hgrow="ALWAYS" />
+                </columnConstraints>
+                <children>
+                    <Label text="Ticket No :" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <Label fx:id="lblDetailId" text="-" style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                    <Label text="Date/Heure :" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                    <Label fx:id="lblDetailDate" text="-" style="-fx-text-fill: #ffffff;" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                    <Label text="Client :" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                    <Label fx:id="lblDetailClient" text="-" style="-fx-text-fill: #38bdf8; -fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                    <Label text="Paiement :" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                    <Label fx:id="lblDetailPaiement" text="-" style="-fx-text-fill: #ffffff;" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                </children>
+            </GridPane>
+
+            <Separator styleClass="subtle-divider"/>
+            <Label text="Articles achetés :" styleClass="form-section-title" style="-fx-font-size: 14px;"/>
+
+            <!-- Table des lignes de vente -->
+            <TableView fx:id="tableDetailLignes" VBox.vgrow="ALWAYS" prefHeight="150.0">
+                <columns>
+                    <TableColumn fx:id="colDetailNom" text="Article" prefWidth="150.0"/>
+                    <TableColumn fx:id="colDetailQte" text="Qté" prefWidth="50.0"/>
+                    <TableColumn fx:id="colDetailPrix" text="Prix Facture" prefWidth="100.0"/>
+                </columns>
+            </TableView>
+
+            <Separator styleClass="subtle-divider"/>
+            
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Label text="TOTAL NET :" styleClass="form-label" style="-fx-font-size: 14px;"/>
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="lblDetailTotalNet" text="0.00 HTG" styleClass="summary-value-highlight" style="-fx-font-size: 20px;"/>
+            </HBox>
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <!-- Bloc Boutons Actions -->
+            <VBox spacing="10.0">
+                <Button fx:id="btnReimprimer" text="🖨️ Réimprimer le Reçu" onAction="#reimprimerReçu" styleClass="btn-primary" prefWidth="350.0" disable="true"/>
+                <Button fx:id="btnAnnuler" text="❌ Annuler &amp; Retour Stock" onAction="#annulerTransaction" styleClass="btn-danger" prefWidth="350.0" disable="true"/>
+            </VBox>
+        </VBox>
+    </HBox>
+
+</VBox>
